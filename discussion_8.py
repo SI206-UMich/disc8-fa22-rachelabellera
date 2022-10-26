@@ -7,18 +7,31 @@ import unittest
 # HINT: You will have to add https://en.wikipedia.org to the URL retrieved using BeautifulSoup
 def getLink(soup):
     
-    pass
+    a_tag = soup.find('a', title = "List of American universities with Olympic medals")
+    return 'https://en.wikipedia.org' + a_tag.get('href')
 
 # Task 3: Get the details from the box titled "College/school founding". Get all the college/school names and the year they were
 # founded and organize the same into key-value pairs.
 def getAdmissionsInfo2019(soup):
 
-    pass
-
+    table_tag = soup.find('table', class_='toccolours')
+    tr_list = table_tag.find_all('tr')
+    school_year_dict = {}
+    for tr_tag in tr_list[1:]:
+        td_list = tr_tag.find_all('td')
+        school_name = td_list[0].text.rstrip()
+        year = td_list[1].text.rstrip()
+        school_year_dict[school_name] = year
+    return school_year_dict
 
 
 def main():
     # Task 1: Create a BeautifulSoup object and name it soup. Refer to discussion slides or lecture slides to complete this
+    url = 'https://en.wikipedia.org/wiki/University_of_Michigan'
+    r = requests.get(url).text
+    soup = BeautifulSoup(r, 'html.parser')
+    getLink(soup)
+    getAdmissionsInfo2019(soup)
 
     #### YOUR CODE HERE####
 
@@ -34,22 +47,7 @@ class TestAllMethods(unittest.TestCase):
         self.assertEqual(getLink(self.soup), 'https://en.wikipedia.org/wiki/List_of_American_universities_with_Olympic_medals')
 
     def test_admissions_info(self):
-        self.assertEqual(getAdmissionsInfo2019(self.soup), {'Engineering': '1854', 
-                                                            'Law': '1859',
-                                                            'Dentistry': '1875', 
-                                                            'Pharmacy': '1876', 
-                                                            'Music, Theatre &Dance': '1880', 
-                                                            'Nursing': '1893', 
-                                                            'Architecture &Urban Planning': '1906', 
-                                                            'Graduate Studies': '1912', 
-                                                            'Government': '1914', 'Education': 
-                                                            '1921', 'Business': '1924', 
-                                                            'Environment andSustainability': '1927', 
-                                                            'Public Health': '1941', 
-                                                            'Social Work': '1951', 
-                                                            'Information': '1969', 
-                                                            'Art & Design': '1974', 
-                                                            'Kinesiology': '1984'})
+        self.assertEqual(getAdmissionsInfo2019(self.soup), {'Literature, Science, andthe Arts': '1841', 'Medicine': '1850', 'Engineering': '1854', 'Law': '1859', 'Dentistry': '1875', 'Pharmacy': '1876', 'Music, Theatre &Dance': '1880', 'Nursing': '1893', 'Architecture &Urban Planning': '1906', 'Graduate Studies': '1912', 'Government': '1914', 'Education': '1921', 'Business': '1924', 'Environment andSustainability': '1927', 'Public Health': '1941', 'Social Work': '1951', 'Information': '1969', 'Art & Design': '1974', 'Kinesiology': '1984'})
 
 if __name__ == "__main__":
     main()
